@@ -8,10 +8,17 @@ require("dotenv").config();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://news-together-app.vercel.app"
+];
+
 app.use(cors({
-    origin: "http://localhost:3000",
-    credentials: true
+  origin: allowedOrigins,
+  credentials: true, // if using cookies or authentication
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
