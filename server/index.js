@@ -7,8 +7,7 @@ require("dotenv").config();
 
 const PORT = process.env.PORT || 4000;
 
-// Middleware
-
+// CORS Configuration
 const allowedOrigins = [
   "http://localhost:3000",
   "https://news-together-app.vercel.app"
@@ -16,7 +15,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: allowedOrigins,
-  credentials: true, // if using cookies or authentication
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -25,22 +24,21 @@ app.use(cookieParser());
 // Connect to MongoDB
 connectDB();
 
-// Optional: log each incoming request (for debugging)
+// Debugging incoming requests
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
 
-// API routes
-const news = require("./routes/news");
-app.use("/api/v1", news);
+// Routes
+const apiRoutes = require("./routes/news");
+app.use("/api/v1", apiRoutes);
 
-// Root route (test/debug)
+// Test Route
 app.get("/", (req, res) => {
     res.status(200).json({ message: "📰 Welcome to News Together API" });
 });
 
-// Server start log
 app.listen(PORT, () => {
     console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
