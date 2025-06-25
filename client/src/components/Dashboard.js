@@ -82,7 +82,7 @@ const url = isSearching
       }
 
       // ✅ DELETE request using ID in URL
-      await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${bookmarkId}`, {
+      await axios.delete(`https://news-together-app.onrender.com/api/v1/deleteBookmarkedNews/${bookmarkId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -91,7 +91,7 @@ const url = isSearching
     } else {
       // ✅ POST request to add bookmark
       const res = await axios.post(
-        `http://localhost:4000/api/v1/addToBookmarkedNews`,
+        `https://news-together-app.onrender.com/api/v1/addToBookmarkedNews`,
         article,
         { headers: { Authorization: `Bearer ${token}` } }
       );
