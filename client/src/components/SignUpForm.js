@@ -25,7 +25,7 @@ const SignUpForm = ({setIsActive}) => {
     const handleSignUp = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/api/v1/signup', { firstName, lastName, email, password, confirmPassword });
+            const response = await axios.post('https://news-together-app.onrender.com/api/v1/signup', { firstName, lastName, email, password, confirmPassword });
             toast.success("Successfully Signed Up");
             setFirstName("") ;
             setLastName("") ;
