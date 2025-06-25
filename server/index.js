@@ -25,9 +25,9 @@ const news = require("./routes/news") ;
 app.use("/api/v1", news) ;
 
 
-app.get("/", () => {
-    console.log(`App is running on port no. ${PORT}`)
-})
+// app.get("/", () => {
+//     console.log(`App is running on port no. ${PORT}`)
+// })
 app.get("/", async (req, res) => {
   res.status(200).json({
     message: "Hello from server",
