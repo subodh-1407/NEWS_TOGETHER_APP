@@ -30,7 +30,7 @@ const Settings = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${existingArticle._id}`, {
+      await axios.delete(`https://news-together-app.onrender.com/api/v1/deleteBookmarkedNews/${existingArticle._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -40,7 +40,7 @@ const Settings = () => {
       toast.success("Removed from Favourites");
     } else {
       const response = await axios.post(
-        `http://localhost:4000/api/v1/addToBookmarkedNews`,
+        `https://news-together-app.onrender.com/api/v1/addToBookmarkedNews`,
         article,
         {
           headers: {
