@@ -41,7 +41,7 @@ const Search = () => {
     const url = `https://newsapi.org/v2/everything?q=${query}&pageSize=${pageSize}&page=${page}&apiKey=${apiKey}`;
 
     try {
-      const response = await axios.get(url);
+      const response = await axios.get('https://news-together-app.onrender.com/api/v1/news?category=general');
       if (response.status === 200) {
         setSelectedNews(response.data.articles);
         setTotalPages(Math.ceil(response.data.totalResults / pageSize));
