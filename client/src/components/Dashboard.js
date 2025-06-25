@@ -35,8 +35,10 @@ const Dashboard = () => {
       try {
         const API_KEY = "aa2c7282bcd749e68c22b3ff5df8a0ad";
 const url = isSearching
-  ? `https://newsapi.org/v2/everything?q=${encodeURIComponent(searchQuery)}&pageSize=${PAGE_SIZE}&page=${currentPage}&apiKey=${API_KEY}`
-  : `https://newsapi.org/v2/top-headlines?country=us&category=${selectedCategory}&pageSize=${PAGE_SIZE}&page=${currentPage}&apiKey=${API_KEY}`;
+  ? await axios.get('https://news-together-app.onrender.com/api/v1/news?category=general');
+
+  : await axios.get('https://news-together-app.onrender.com/api/v1/news?category=general');
+;
 
 
         const response = await axios.get(url);
