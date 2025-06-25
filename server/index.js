@@ -4,18 +4,14 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/connectDB");
 require("dotenv").config();
+const path = require('path');
 
 const PORT = process.env.PORT || 4000;
 
-// Middleware
-
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://news-together-app-1.onrender.com'
-];
-
+// CORS config
+const allowedOrigins = ['http://localhost:3000', 'https://news-together-app-1.onrender.com'];
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -24,28 +20,32 @@ app.use(cors({
   },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 
-// Connect to MongoDB
+// Connect DB
 connectDB();
 
-// Optional: log each incoming request (for debugging)
+// Logging
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
 });
 
-// API routes
+// API Routes
 const news = require("./routes/news");
 app.use("/api/v1", news);
 
-// Root route (test/debug)
-app.get("/", (req, res) => {
-    res.status(200).json({ message: "📰 Welcome to News Together API" });
+// Static frontend files
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+// Catch-all for React Router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
 
-// Server start log
+// Start server
 app.listen(PORT, () => {
-    console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
