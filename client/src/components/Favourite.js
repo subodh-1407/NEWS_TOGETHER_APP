@@ -13,7 +13,7 @@ const Favourite = () => {
     const fetchLikedArticles = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get("http://localhost:4000/api/v1/getAllBookmarkedNews", {
+        const response = await axios.get("https://news-together-app.onrender.com/v1/getAllBookmarkedNews", {
           headers: {
             Authorization: `Bearer ${token}`
           },
@@ -39,7 +39,7 @@ const Favourite = () => {
   const removeFromFavourites = async (articleId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${articleId}`, {
+      await axios.delete(`https://news-together-app.onrender.com/api/v1/deleteBookmarkedNews/${articleId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         },
