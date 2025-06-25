@@ -17,7 +17,7 @@ const Main = () => {
   const url = `https://newsapi.org/v2/top-headlines?country=us&pageSize=10&apiKey=${apiKey}`;
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get('https://news-together-app.onrender.com/api/v1/news?category=general');;
     const articles = response.data.articles;
 
     if (articles.length > 0) {
