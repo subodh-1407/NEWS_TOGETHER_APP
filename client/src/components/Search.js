@@ -77,7 +77,7 @@ const Search = () => {
 
         updatedLikedArticles = likedArticles.filter((a) => a.url !== article.url);
 
-        await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${articleId}`, {
+        await axios.delete(`https://news-together-app.onrender.com/api/v1/deleteBookmarkedNews/${articleId}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -86,7 +86,7 @@ const Search = () => {
         toast.success("Removed from Favourites");
       } else {
         const response = await axios.post(
-          "http://localhost:4000/api/v1/addToBookmarkedNews",
+          "https://news-together-app.onrender.com/api/v1/addToBookmarkedNews",
           article,
           {
             headers: {
