@@ -208,8 +208,7 @@
 //   );
 // };
 
-// export default Search;
-"use client"
+// export default Search;"use client"
 
 import { useState, useEffect, useContext } from "react"
 import axios from "axios"
@@ -221,6 +220,7 @@ import Navbar from "./Navbar"
 import Footer from "./Footer"
 import { ThemeContext } from "./ThemeContext"
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://news-together-app.onrender.com"
 const apiKey = "aa2c7282bcd749e68c22b3ff5df8a0ad" // Updated API key
 
 const Search = () => {
@@ -251,11 +251,21 @@ const Search = () => {
 
   const fetchSearchData = async (query, page) => {
     const pageSize = 6
-    const url = `https://newsapi.org/v2/everything?q=${query}&pageSize=${pageSize}&page=${page}&apiKey=${apiKey}`
 
     try {
-      const response = await axios.get("https://news-together-app.onrender.com/api/v1/news?category=general")
-      if (response.status === 200) {
+      let response
+
+      if (query && query.trim()) {
+        // Use search endpoint for actual search queries
+        const url = `${API_BASE_URL}/api/v1/search?q=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
+        response = await axios.get(url, { timeout: 10000 })
+      } else {
+        // Use general news endpoint for default/empty queries
+        const url = `${API_BASE_URL}/api/v1/news?category=general&page=${page}&pageSize=${pageSize}`
+        response = await axios.get(url, { timeout: 10000 })
+      }
+
+      if (response.status === 200 && response.data.articles) {
         setSelectedNews(response.data.articles)
         setTotalPages(Math.ceil(response.data.totalResults / pageSize))
       } else {
