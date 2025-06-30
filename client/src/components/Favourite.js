@@ -130,7 +130,8 @@
 //   );
 // };
 
-// export default Favourite;"use client""use client"
+// export default Favourite;"use client"
+"use client"
 
 import { useState, useEffect, useContext } from "react"
 import axios from "axios"
