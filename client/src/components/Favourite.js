@@ -130,7 +130,7 @@
 //   );
 // };
 
-// export default Favourite;"use client"
+// export default Favourite;"use client""use client"
 
 import { useState, useEffect, useContext } from "react"
 import axios from "axios"
@@ -144,7 +144,9 @@ const Favourite = () => {
   const [likedArticles, setLikedArticles] = useState([])
   const [loading, setLoading] = useState(true)
   const { theme } = useContext(ThemeContext)
-  const API_BASE_URL = process.env.REACT_APP_API_URL || "https://news-together-app.onrender.com"
+
+  // Fixed API base URL
+  const API_BASE_URL = "https://news-together-app.onrender.com"
 
   useEffect(() => {
     const fetchLikedArticles = async () => {
@@ -159,6 +161,7 @@ const Favourite = () => {
         }
 
         console.log("Token found, making API request...")
+        console.log("API URL:", `${API_BASE_URL}/api/v1/getAllBookmarkedNews`)
 
         const response = await axios.get(`${API_BASE_URL}/api/v1/getAllBookmarkedNews`, {
           headers: {
@@ -179,10 +182,17 @@ const Favourite = () => {
         }
       } catch (error) {
         console.error("Error fetching liked articles:", error)
+        console.error("Error details:", {
+          message: error.message,
+          status: error.response?.status,
+          url: error.config?.url,
+        })
 
         if (error.response?.status === 401) {
           toast.error("Session expired. Please login again.")
           localStorage.removeItem("token")
+        } else if (error.response?.status === 404) {
+          toast.error("API endpoint not found. Please check server configuration.")
         } else {
           toast.error("Failed to load bookmarks")
         }
@@ -203,6 +213,9 @@ const Favourite = () => {
         return
       }
 
+      console.log("Removing article with ID:", articleId)
+      console.log("Delete URL:", `${API_BASE_URL}/api/v1/deleteBookmarkedNews/${articleId}`)
+
       await axios.delete(`${API_BASE_URL}/api/v1/deleteBookmarkedNews/${articleId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -215,10 +228,17 @@ const Favourite = () => {
       toast.success("Article removed from favourites")
     } catch (error) {
       console.error("Error removing article from favourites:", error)
+      console.error("Error details:", {
+        message: error.message,
+        status: error.response?.status,
+        url: error.config?.url,
+      })
 
       if (error.response?.status === 401) {
         toast.error("Session expired. Please login again.")
         localStorage.removeItem("token")
+      } else if (error.response?.status === 404) {
+        toast.error("Article not found or already removed.")
       } else {
         toast.error("Failed to remove article")
       }
