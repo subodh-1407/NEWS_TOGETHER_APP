@@ -7,7 +7,9 @@ import axios from "axios"
 import defaultImage from "../news-notdefined.jpeg"
 import { FaAngleLeft } from "react-icons/fa6"
 
-import { API_BASE_URL } from "../config/api"
+
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://news-together-app.onrender.com';
 
 const Main = () => {
   const [heroImages, setHeroImages] = useState([])
@@ -19,7 +21,7 @@ const Main = () => {
 
   const fetchHeroImages = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/news?category=general&pageSize=10`, {
+      const response = await axios.get(`${API_BASE_URL}/api/v1/news?category=general&pageSize=10`, {
         timeout: 10000,
       })
 

@@ -19,7 +19,7 @@ Backend: https://news-together-app.onrender.com
 
 - Vercel root directory: client. Build command: npm run build. Output: build.
 - Render root directory: server. Start command: npm start.
-- REACT_APP_API_URL is a frontend build variable. It accepts a backend origin or an existing /api/v1 URL. Production defaults to the Render backend above; development defaults to localhost:4000. All news, search, login, signup, and bookmark requests use the same normalized base.
+- REACT_APP_API_URL is a frontend build variable. Set it to the backend origin (for example https://news-together-app.onrender.com), without /api/v1. News fetching retains the original production Render proxy calls and defaults to Render even during local development. Login, signup, and bookmarks use the shared normalized base and default to localhost:4000 during development.
 - Render requires MONGODB_URI, JWT_SECRET, and NEWS_API_KEY. Set NODE_ENV=production. FRONTEND_URL may specify the public frontend origin; the current Vercel origin is allowed by default. CORS_ORIGIN and CLIENT_ORIGIN are accepted as legacy aliases.
 - A frontend environment change requires a new Vercel build. A backend environment or controller change requires a Render deployment/restart.
 - Pushing main triggers deployment only when the hosting service has Git auto-deploy enabled for that branch. Check Vercel and Render independently.

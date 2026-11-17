@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from '../config/api';
+
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { Toaster } from 'react-hot-toast';
 import useBookmarks from '../hooks/useBookmarks';
 import defaultImage from '../news-notdefined.jpeg';
 import { ThemeContext } from './ThemeContext';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://news-together-app.onrender.com';
 
 const Dashboard = () => {
   const { theme } = useContext(ThemeContext);
@@ -21,30 +23,39 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchNews = async () => {
-      setLoading(true);
-      setError(null);
+      setLoading(true)
+      setError(null)
 
-      try {const params = new URLSearchParams({ page: String(currentPage), pageSize: String(PAGE_SIZE) });
-        const searching = isSearching || selectedCategory === 'politics';
-        if (searching) params.set('q', searchQuery || 'politics');
-        else params.set('category', selectedCategory);
-        const response = await axios.get(API_BASE_URL + (searching ? '/search?' : '/news?') + params, { timeout: 15000 });
+      try {
+        let url
+        if (isSearching && searchQuery) {
+          url = `${API_BASE_URL}/api/v1/search?q=${encodeURIComponent(searchQuery)}&page=${currentPage}&pageSize=${PAGE_SIZE}`
+        } else {
+          url = `${API_BASE_URL}/api/v1/news?category=${selectedCategory}&page=${currentPage}&pageSize=${PAGE_SIZE}`
+        }
+
+        const response = await axios.get(url, {
+          timeout: 15000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
 
         if (response.data && Array.isArray(response.data.articles)) {
-          setSelectedNews(response.data.articles);
-          setTotalPages(Math.ceil(response.data.totalResults / PAGE_SIZE));
+          setSelectedNews(response.data.articles)
+          setTotalPages(Math.ceil(response.data.totalResults / PAGE_SIZE))
         } else {
-          throw new Error('Invalid response format');
+          throw new Error("Invalid response format")
         }
       } catch (err) {
-        console.error('Error fetching news:', err);
-        setError('Failed to load news. Please try again later.');
-        setSelectedNews([]);
-        setTotalPages(1);
+        console.error("Error fetching news:", err)
+        setError("Failed to load news. Please try again later.")
+        setSelectedNews([])
+        setTotalPages(1)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
     fetchNews();
   }, [selectedCategory, currentPage, searchQuery, isSearching]);

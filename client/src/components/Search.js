@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from '../config/api';
+
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 import { Toaster } from 'react-hot-toast';
 import useBookmarks from '../hooks/useBookmarks';
@@ -10,6 +10,8 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { ThemeContext } from './ThemeContext';
 
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://news-together-app.onrender.com';
 
 const Search = () => {
   const location = useLocation();
@@ -38,23 +40,31 @@ const Search = () => {
   }, [searchQuery, currentPage]);
 
   const fetchSearchData = async (query, page) => {
-    const pageSize = 6;
-    const url = API_BASE_URL + '/search?' + new URLSearchParams({q: query, pageSize: String(pageSize), page: String(page)});
+    const pageSize = 6
 
     try {
-      const response = await axios.get(url);
-      if (response.status === 200) {
-        setSelectedNews(response.data.articles);
-        setTotalPages(Math.ceil(response.data.totalResults / pageSize));
+      let response
+
+      if (query && query.trim()) {
+        const url = `${API_BASE_URL}/api/v1/search?q=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
+        response = await axios.get(url, { timeout: 10000 })
       } else {
-        throw new Error('Failed to fetch data');
+        const url = `${API_BASE_URL}/api/v1/news?category=general&page=${page}&pageSize=${pageSize}`
+        response = await axios.get(url, { timeout: 10000 })
+      }
+
+      if (response.status === 200 && response.data.articles) {
+        setSelectedNews(response.data.articles)
+        setTotalPages(Math.ceil(response.data.totalResults / pageSize))
+      } else {
+        throw new Error("Failed to fetch data")
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      setSelectedNews([]);
-      setTotalPages(1);
+      console.error("Error fetching data:", error)
+      setSelectedNews([])
+      setTotalPages(1)
     }
-  };
+  }
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
