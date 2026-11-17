@@ -1,12 +1,12 @@
 import React from 'react'
-import './Auth.css' ;    
+import './Auth.css' ;
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = process.env.REACT_APP_BASE_URL || "http://localhost:5000/api"; // fallback if undefined
 
 
 
@@ -25,7 +25,7 @@ const SignUpForm = ({setIsActive}) => {
     const handleSignUp = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/api/v1/signup', { firstName, lastName, email, password, confirmPassword });
+            await axios.post(API_BASE_URL + '/signup', { firstName, lastName, email, password, confirmPassword });
             toast.success("Successfully Signed Up");
             setFirstName("") ;
             setLastName("") ;
@@ -37,7 +37,7 @@ const SignUpForm = ({setIsActive}) => {
         } catch (error) {
             console.error('There was an error registering!', error);
             // toast.error("There was an error registering");
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Unable to connect. Please try again.');
         }
     };
 
@@ -60,7 +60,7 @@ const SignUpForm = ({setIsActive}) => {
                     console.log(showPassword);
                 }}
                 fontSize={24}
-                fill="#AFB2BF"
+                fill="var(--nt-muted)"
                 />
             ) : (
                 <AiOutlineEye className='cursor-pointer absolute translate-x-[125px] translate-y-[30px]'
@@ -69,7 +69,7 @@ const SignUpForm = ({setIsActive}) => {
                     console.log(showPassword);
                 }}
                 fontSize={24}
-                fill="#AFB2BF"
+                fill="var(--nt-muted)"
                 />
             )}
 
@@ -81,7 +81,7 @@ const SignUpForm = ({setIsActive}) => {
                         console.log(showConfirmPassword);
                     }}
                     fontSize={24}
-                    fill="#AFB2BF"
+                    fill="var(--nt-muted)"
                     />
                 ) : (
                     <AiOutlineEye className='cursor-pointer absolute translate-x-[125px] translate-y-[85px]'
@@ -90,10 +90,10 @@ const SignUpForm = ({setIsActive}) => {
                         console.log(showConfirmPassword);
                     }}
                     fontSize={24}
-                    fill="#AFB2BF"
+                    fill="var(--nt-muted)"
                     />
                 )}
-                
+
             <button type="submit" >Sign Up</button>
         </form>
     );

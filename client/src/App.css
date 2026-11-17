@@ -10,15 +10,16 @@
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--nt-surface);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 
 .language-btn:hover {
-  border-color: #0C6FFD;
+  border-color: var(--nt-accent);
 }
 
 .language-btn.selected {
-  background-color: #0C6FFD;
+  background-color: var(--nt-accent-fill);
+  color: var(--nt-on-accent);
 }

@@ -1,83 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
-import toast from 'react-hot-toast';
 import defaultImage from '../news-notdefined.jpeg';
 import LanguageSelector from './language-selector';
 import { useTranslation } from 'react-i18next';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { ThemeContext } from './ThemeContext';
-import axios from 'axios';
+import useBookmarks from '../hooks/useBookmarks';
 
 const Settings = () => {
   const { t, i18n } = useTranslation();
   const [selectedNews, setSelectedNews] = useState([]);
-  const [likedArticles, setLikedArticles] = useState([]);
+  const { likedArticles, toggleBookmark: clickHandler } = useBookmarks();
   const { theme } = useContext(ThemeContext);
-
-  const clickHandler = async (article) => {
-  try {
-    const token = localStorage.getItem('token');
-    let updatedLikedArticles;
-
-    const existingArticle = likedArticles.find((a) => a.url === article.url);
-
-    if (existingArticle) {
-      // ✅ Ensure existingArticle._id is valid
-      if (!existingArticle._id) {
-        toast.error("Missing article ID for deletion");
-        console.error("Article missing _id:", existingArticle);
-        return;
-      }
-
-      await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${existingArticle._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      updatedLikedArticles = likedArticles.filter((a) => a.url !== article.url);
-      toast.success("Removed from Favourites");
-    } else {
-      const response = await axios.post(
-        `http://localhost:4000/api/v1/addToBookmarkedNews`,
-        article,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-
-      const savedArticle = response.data.savedArticle;
-
-      if (!savedArticle || !savedArticle._id) {
-        toast.error("Article could not be saved");
-        console.error("Invalid response from server:", response.data);
-        return;
-      }
-
-      updatedLikedArticles = [...likedArticles, savedArticle];
-      toast.success("Added to Favourites");
-    }
-
-    setLikedArticles(updatedLikedArticles);
-    localStorage.setItem('likedArticles', JSON.stringify(updatedLikedArticles));
-  } catch (err) {
-    console.error(err);
-    toast.error("An error occurred");
-  }
-};
-
-
-  // Load liked articles from localStorage on mount
-  useEffect(() => {
-    const storedLikedArticles = localStorage.getItem('likedArticles');
-    if (storedLikedArticles) {
-      setLikedArticles(JSON.parse(storedLikedArticles));
-    }
-  }, []);
 
   // Load translated articles on language change
   useEffect(() => {
@@ -96,11 +31,11 @@ const Settings = () => {
           <div
             key={index}
             className={`rounded-lg shadow-lg p-6 transition-transform transform hover:scale-105 relative ${
-              theme === 'light' ? 'bg-[#333] text-white' : 'bg-white text-black'
+              theme === 'light' ? 'bg-[var(--nt-fixed-card,#1f2937)] text-white' : 'bg-white text-black'
             }`}
           >
             <div className={`w-[40px] h-[40px] ${theme === 'light' ? 'bg-black' : 'bg-white'} shadow-lg rounded-full absolute right-2 bottom-56 grid place-items-center`}>
-              <button onClick={() => clickHandler(article)} className={`p-2 rounded-full ${theme === 'light' ? 'bg-black' : 'bg-white'}`}>
+              <button aria-label={likedArticles.some(a => a.url === article.url) ? 'Remove bookmark' : 'Add bookmark'} onClick={() => clickHandler(article)} className={`p-2 rounded-full ${theme === 'light' ? 'bg-black' : 'bg-white'}`}>
                 {likedArticles.some((a) => a.url === article.url) ? (
                   <FcLike fontSize="1.75rem" />
                 ) : (

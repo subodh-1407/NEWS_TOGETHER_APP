@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ThemeContext } from './ThemeContext';  
+import { ThemeContext } from './ThemeContext';
 
 const Categories = () => {
     const { theme } = useContext(ThemeContext);
@@ -46,7 +46,7 @@ const Categories = () => {
                     content: '';
                     position: absolute;
                     inset: 0;
-                    background: linear-gradient(to top, ${theme === 'dark' ? 'white' : 'black'}, transparent);
+                    background: linear-gradient(to top, var(--nt-background), transparent);
                     z-index: 1;
                     border-radius: inherit;
                 }
@@ -56,7 +56,7 @@ const Categories = () => {
                     transition: color 0.3s;
                 }
                 .image-container:hover h4 {
-                    color: ${theme === 'dark' ? '#000000' : '#FFFFFF'};
+                    color: var(--nt-text);
                 }
             `}</style>
         </div>
@@ -75,7 +75,7 @@ const getBackgroundImage = (query) => {
         case 'information technology':
             return 'https://i.insider.com/659a6aa8ec62ab5daf81571f?width=700';
         default:
-            return ''; 
+            return '';
     }
 };
 

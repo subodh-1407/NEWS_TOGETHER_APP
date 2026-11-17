@@ -66,7 +66,7 @@ const Support = () => {
             <input
               type="submit"
               value="Submit"
-              className={`bg-blue-500 text-white font-bold p-3 rounded-lg cursor-pointer hover:bg-blue-600 transition-colors w-full ${theme === 'light' ? 'hover:bg-blue-700' : 'hover:bg-blue-400'}`}
+              className={`bg-blue-500 text-black font-bold p-3 rounded-lg cursor-pointer hover:bg-blue-600 transition-colors w-full ${theme === 'light' ? 'hover:bg-blue-700' : 'hover:bg-blue-400'}`}
             />
           </form>
         </section>

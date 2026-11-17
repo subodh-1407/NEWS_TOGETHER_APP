@@ -2,6 +2,8 @@
 import React, { useContext } from 'react';
 import CTABg from '../ctaBg.svg';
 import CTAImage from '../ctaImg.svg';
+import CTABgDark from '../ctaBg-dark.svg';
+import CTAImageDark from '../ctaImg-dark.svg';
 import { FaCheck } from "react-icons/fa6";
 import { ThemeContext } from './ThemeContext'; // Ensure ThemeContext is imported
 
@@ -10,9 +12,9 @@ const Explore = () => {
 
     return (
         <div className={`w-full h-full ${theme === 'light' ? 'bg-black' : 'bg-gray-100'}`}>
-            <section 
+            <section
                 className={`bg-cover bg-center w-full h-full bg-no-repeat relative min-h-[530px] ${theme === 'light' ? 'bg-black' : 'bg-white'}`}
-                style={{ backgroundImage: `url(${CTABg})` }}
+                style={{ backgroundImage: `url(${theme === 'dark' ? CTABgDark : CTABg})` }}
             >
                 <div className={`flex justify-center items-center relative ${theme === 'light' ? 'text-white' : 'text-black'}`}>
                     <div className={`absolute w-5/6 border-[1.5px] ${theme === 'light' ? 'border-white' : 'border-gray-300'} rounded-lg`}></div>
@@ -21,7 +23,7 @@ const Explore = () => {
                 <div className={`w-11/12 max-w-[1080px] relative flex flex-row items-center justify-between space-x-20 mx-auto pt-16 ${theme === 'light' ? 'text-white' : 'text-black'}`}>
                     <div className="flex flex-col gap-5 mt-12 max-w-[600px]">
                         <h2 className={`font-bold text-2xl text-left ${theme === 'light' ? 'text-white' : 'text-white'}`}>
-                            Go Beyond The Headlines: In-Depth News Aggregator
+                            Go Beyond The Headlines: In-Depth NewTogether
                         </h2>
                         <div className={`w-6 h-1 ${theme === 'light' ? 'bg-blue-400' : 'bg-blue-400'}`}></div>
                         <p className={`text-left ${theme === 'light' ? 'text-white' : 'text-white'}`}>
@@ -54,7 +56,7 @@ const Explore = () => {
                             </svg>
                         </button> */}
                     </div>
-                    <img src={CTAImage} alt="" width="240px" height="282px" className="mt-16 pt-6 hidden lg:block" />
+                    <img src={theme === 'dark' ? CTAImageDark : CTAImage} alt="" width="240px" height="282px" className="mt-16 pt-6 hidden lg:block" />
                 </div>
             </section>
         </div>

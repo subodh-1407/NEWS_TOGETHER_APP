@@ -1,0 +1,11 @@
+const {test,before,after}=require('node:test');
+const assert=require('node:assert/strict');
+const axios=require('axios');
+const app=require('../index');
+let server,base;
+before(async()=>{server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));base='http://127.0.0.1:'+server.address().port;});
+after(()=>new Promise(resolve=>server.close(resolve)));
+test('production frontend origin can access API health',async()=>{const r=await fetch(base+'/health',{headers:{Origin:'https://news-together-app.vercel.app'}});assert.equal(r.status,200);assert.equal(r.headers.get('access-control-allow-origin'),'https://news-together-app.vercel.app');assert.equal((await r.json()).status,'OK');});
+test('bookmark DELETE preflight supports production origin and bearer headers',async()=>{const r=await fetch(base+'/api/v1/deleteBookmarkedNews/example',{method:'OPTIONS',headers:{Origin:'https://news-together-app.vercel.app','Access-Control-Request-Method':'DELETE','Access-Control-Request-Headers':'authorization'}});assert.equal(r.status,204);assert.match(r.headers.get('access-control-allow-methods'),/DELETE/);});
+test('unknown origins are rejected',async()=>{const r=await fetch(base+'/health',{headers:{Origin:'https://untrusted.example'}});assert.equal(r.status,403);});
+test('news proxy keeps provider credentials on the server',async t=>{const previous=process.env.NEWS_API_KEY;process.env.NEWS_API_KEY='test-only-key';t.after(()=>{if(previous===undefined)delete process.env.NEWS_API_KEY;else process.env.NEWS_API_KEY=previous;});t.mock.method(axios,'get',async(url,options)=>{assert.equal(options.params.apiKey,'test-only-key');assert.equal(options.params.category,'science');return {data:{status:'ok',articles:[],totalResults:0}};});const r=await fetch(base+'/api/v1/news?category=science');assert.equal(r.status,200);assert.equal((await r.json()).status,'ok');});

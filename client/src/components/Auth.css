@@ -8,8 +8,8 @@
 }
 
 body {
-    background-color: #000; /* Black background for the whole page */
-    color: #000; /* White text color */
+    background-color: var(--nt-background);
+    color: var(--nt-text);
 }
 
 .wrapper {
@@ -20,7 +20,7 @@ body {
 }
 
 .container2 {
-    background-color: #1c1c1c; /* Dark grey background for the container */
+    background-color: var(--nt-surface);
     border-radius: 30px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
     position: relative;
@@ -37,25 +37,25 @@ body {
     line-height: 20px;
     letter-spacing: 0.3px;
     margin: 20px 0;
-    /* color: #ccc; Light grey text color for paragraphs */
-    color: #fff; /* Light grey text color for paragraphs */
+
+    color: var(--nt-text);
 }
 
 .container2 span {
     font-size: 12px;
-    color: #aaa; /* Slightly lighter grey for spans */
+    color: var(--nt-muted);
 }
 
 .container2 a {
-    color: #00bfff; /* Bright blue for links */
+    color: var(--nt-accent-fill);
     font-size: 13px;
     text-decoration: none;
     margin: 15px 0 10px;
 }
 
 .container2 button {
-    background-color: #00bfff; /* Bright blue for buttons */
-    color: #fff; /* White text on buttons */
+    background-color: var(--nt-accent-fill);
+    color: var(--nt-text);
     font-size: 12px;
     padding: 10px 45px;
     border: 1px solid transparent;
@@ -69,16 +69,16 @@ body {
 }
 
 .container2 button:hover {
-    background-color: #009acd; /* Slightly darker blue on hover */
+    background-color: var(--nt-accent-hover);
 }
 
 .container2 button.hidden {
     background-color: transparent;
-    border-color: #fff;
+    border-color: var(--nt-text);
 }
 
 .container2 form {
-    background-color: #1c1c1c; /* Dark grey background for form */
+    background-color: var(--nt-surface);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,7 +88,7 @@ body {
 }
 
 .container2 input {
-    background-color: #333; /* Dark grey input fields */
+    background-color: var(--nt-field);
     border: none;
     margin: 8px 0;
     padding: 10px 15px;
@@ -96,7 +96,7 @@ body {
     border-radius: 8px;
     width: 100%;
     outline: none;
-    color: #fff; /* White text in input fields */
+    color: var(--nt-text);
 }
 
 .form-container2 {
@@ -159,10 +159,10 @@ body {
 }
 
 .toggle {
-    background-color: #0C6FFD; /* Bright blue for toggle */
+    background-color: var(--nt-accent-fill);
     height: 100%;
-    background: linear-gradient(to right, #0C6FFD, #00bfff); /* Gradient blue */
-    color: #fff;
+    background: linear-gradient(to right, var(--nt-accent-fill), var(--nt-accent-fill));
+    color: var(--nt-text);
     position: relative;
     left: -100%;
     height: 100%;
@@ -220,3 +220,30 @@ body {
 .relative {
     position: relative;
 }
+
+.container2 { box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25); }
+.container2 button { color: var(--nt-on-accent); }
+.container2 a { color: var(--nt-accent); }
+.container2 input::placeholder { color: var(--nt-muted); }
+.container2 input:focus-visible { outline: 2px solid var(--nt-accent); }
+.toggle, .toggle p, .toggle h1 { color: var(--nt-on-accent); }
+.wrapper .toggle button { background-color: var(--nt-surface); color: var(--nt-accent-fill); border-color: var(--nt-surface); }
+.wrapper .toggle button:hover { background-color: var(--nt-field); border-color: var(--nt-field); }
+
+/* Authentication always uses Slate & Lavender, independently of the saved mode. */
+.wrapper {
+  --nt-background: #181923;
+  --nt-surface: #252635;
+  --nt-field: #303142;
+  --nt-text: #f2f0f7;
+  --nt-muted: #aaa8ba;
+  --nt-border: #414255;
+  --nt-accent: #b8a4f4;
+  --nt-accent-fill: #b8a4f4;
+  --nt-accent-hover: #cbbbf9;
+  --nt-on-accent: #181923;
+  background-color: var(--nt-background);
+  color: var(--nt-text);
+  color-scheme: dark;
+}
+.wrapper .form-container2 { color: var(--nt-text); }

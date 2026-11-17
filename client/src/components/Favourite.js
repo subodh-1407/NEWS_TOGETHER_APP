@@ -1,56 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import React, { useContext } from 'react';
+import useBookmarks from '../hooks/useBookmarks';
 import defaultImage from '../news-notdefined.jpeg';
 import Footer from './Footer';
 import Navbar from './Navbar';
 import { ThemeContext } from './ThemeContext';
 
 const Favourite = () => {
-  const [likedArticles, setLikedArticles] = useState([]);
+  const { likedArticles, removeBookmark } = useBookmarks();
   const { theme } = useContext(ThemeContext);
-
-  useEffect(() => {
-    const fetchLikedArticles = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get("http://localhost:4000/api/v1/getAllBookmarkedNews", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          withCredentials: true
-        });
-
-        console.log("API Response:", response);
-        console.log("Bookmarked News:", response.data.bookmarkedNews);
-
-        if (Array.isArray(response.data.bookmarkedNews)) {
-          setLikedArticles(response.data.bookmarkedNews);
-        } else {
-          console.error('Expected an array but received:', response.data.bookmarkedNews);
-        }
-      } catch (error) {
-        console.error('Error fetching liked articles:', error);
-      }
-    };
-
-    fetchLikedArticles();
-  }, []);
-
-  const removeFromFavourites = async (articleId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${articleId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        withCredentials: true
-      });
-
-      setLikedArticles(prev => prev.filter(article => article._id !== articleId));
-    } catch (error) {
-      console.error('Error removing article from favourites:', error);
-    }
-  };
 
   const renderLikedArticles = () => {
     if (likedArticles.length === 0) {
@@ -68,7 +25,7 @@ const Favourite = () => {
         {likedArticles.map((article, index) => (
           <div
             key={index}
-            className={`rounded-lg shadow-lg p-6 transition-transform transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-200' : 'bg-[#212121]'}`}
+            className={`rounded-lg shadow-lg p-6 transition-transform transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-200' : 'bg-[var(--nt-fixed-card,#1f2937)]'}`}
           >
             <a href={article.url} target="_blank" rel="noopener noreferrer">
               <img
@@ -80,14 +37,14 @@ const Favourite = () => {
                 <p className={`font-semibold text-lg leading-6 ${theme === 'dark' ? 'text-black' : 'text-white'}`}>
                   {article.title}
                 </p>
-                <p className={`mt-2 ${theme === 'dark' ? 'text-gray-700' : 'text-[#888888]'}`}>
+                <p className={`mt-2 ${theme === 'dark' ? 'text-gray-700' : 'text-[var(--nt-fixed-muted,#9ca3af)]'}`}>
                   {article.description
                     ? article.description.length > 100
                       ? `${article.description.substr(0, 100)}...`
                       : article.description
                     : 'No description available.'}
                 </p>
-                <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-700' : 'text-[#888888]'}`}>
+                <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-700' : 'text-[var(--nt-fixed-muted,#9ca3af)]'}`}>
                   {new Date(article.publishedAt).toLocaleDateString()}
                 </p>
               </div>
@@ -98,7 +55,7 @@ const Favourite = () => {
               <button
                 onClick={() => {
                   if (window.confirm("Are you sure you want to remove this article from favourites?")) {
-                    removeFromFavourites(article._id);
+                    removeBookmark(article);
                   }
                 }}
                 className="bg-red-600 text-white py-1 px-4 rounded hover:bg-red-700 text-sm"
@@ -120,7 +77,7 @@ const Favourite = () => {
           Favourite&nbsp;
           <span className="text-blue-700">Articles</span>
         </h2>
-        <h2 className={`font-bold text-[16px] py-2 text-center ${theme === 'dark' ? 'text-gray-700' : 'text-[#888888]'}`}>
+        <h2 className={`font-bold text-[16px] py-2 text-center ${theme === 'dark' ? 'text-gray-700' : 'text-[var(--nt-fixed-muted,#9ca3af)]'}`}>
           Liked Articles
         </h2>
         {renderLikedArticles()}

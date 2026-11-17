@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import useBookmarks from '../hooks/useBookmarks';
 import defaultImage from '../news-notdefined.jpeg';
 import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { ThemeContext } from './ThemeContext';
 
-const apiKey = 'aa2c7282bcd749e68c22b3ff5df8a0ad'; // Updated API key
 
 const Search = () => {
   const location = useLocation();
@@ -17,7 +18,7 @@ const Search = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
-  const [likedArticles, setLikedArticles] = useState([]);
+  const { likedArticles, toggleBookmark: clickHandler } = useBookmarks();
   const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const Search = () => {
 
   const fetchSearchData = async (query, page) => {
     const pageSize = 6;
-    const url = `https://newsapi.org/v2/everything?q=${query}&pageSize=${pageSize}&page=${page}&apiKey=${apiKey}`;
+    const url = API_BASE_URL + '/search?' + new URLSearchParams({q: query, pageSize: String(pageSize), page: String(page)});
 
     try {
       const response = await axios.get(url);
@@ -61,63 +62,6 @@ const Search = () => {
     setCurrentPage(1);
   };
 
-  const clickHandler = async (article) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error("Please login to manage favorites");
-        return;
-      }
-
-      const existing = likedArticles.find((a) => a.url === article.url);
-      let updatedLikedArticles;
-
-      if (existing) {
-        const articleId = existing._id;
-
-        updatedLikedArticles = likedArticles.filter((a) => a.url !== article.url);
-
-        await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${articleId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        toast.success("Removed from Favourites");
-      } else {
-        const response = await axios.post(
-          "http://localhost:4000/api/v1/addToBookmarkedNews",
-          article,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
-            withCredentials: true
-          }
-        );
-
-        const savedArticle = response.data.savedArticle || article;
-
-        updatedLikedArticles = [...likedArticles, savedArticle];
-
-        toast.success("Added to Favourites");
-      }
-
-      setLikedArticles(updatedLikedArticles);
-      localStorage.setItem('likedArticles', JSON.stringify(updatedLikedArticles));
-    } catch (err) {
-      console.error(err);
-      toast.error("An error occurred");
-    }
-  };
-
-  useEffect(() => {
-    const storedLikedArticles = localStorage.getItem('likedArticles');
-    if (storedLikedArticles) {
-      setLikedArticles(JSON.parse(storedLikedArticles));
-    }
-  }, []);
-
   const renderNewsCards = (news) => {
     if (!news || news.length === 0) return null;
 
@@ -135,10 +79,10 @@ const Search = () => {
               </button>
             </div>
             <a href={article.url} target="_blank" rel="noopener noreferrer">
-              <img 
-                src={article.urlToImage || defaultImage} 
-                alt={article.title} 
-                className="w-full h-48 object-cover rounded-md mb-4" 
+              <img
+                src={article.urlToImage || defaultImage}
+                alt={article.title}
+                className="w-full h-48 object-cover rounded-md mb-4"
               />
               <div className="p-4">
                 <p className="font-semibold text-lg leading-6">{article.title}</p>
@@ -192,7 +136,7 @@ const Search = () => {
               disabled={currentPage === 1}
             >
               Previous
-            </button> 
+            </button>
             <button
               className={`px-4 py-2 text-white rounded-full transition-opacity ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-400' : 'bg-blue-700 hover:bg-blue-600'} ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={() => setCurrentPage(currentPage + 1)}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <title>NewTogether</title>
+  <rect x="2" y="2" width="60" height="60" rx="17" fill="#f59e0b"/>
+  <path d="M17 44V18H24L40 39V18H47V44H40L24 23V44H17Z" fill="#111827"/>
+  <path d="M18 51H29M35 51H46" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -15,3 +15,85 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Midnight & Amber in light mode; Slate & Lavender in dark mode. */
+:root {
+  --nt-background: #f8fafc;
+  --nt-surface: #ffffff;
+  --nt-field: #f1f5f9;
+  --nt-text: #111827;
+  --nt-muted: #475569;
+  --nt-border: #cbd5e1;
+  --nt-accent: #92400e;
+  --nt-accent-fill: #f59e0b;
+  --nt-accent-hover: #fbbf24;
+  --nt-on-accent: #111827;
+  --nt-black-text: #111827;
+  --nt-white-text: #111827;
+  --nt-black-bg: #f8fafc;
+  --nt-white-bg: #ffffff;
+  --nt-fixed-card: #ffffff;
+  --nt-fixed-muted: #475569;
+  --nt-gray-100: #f8fafc;
+  --nt-gray-200: #e5e7eb;
+  --nt-gray-300: #cbd5e1;
+  --nt-gray-400: #475569;
+  --nt-gray-500: #475569;
+  --nt-gray-600: #475569;
+  --nt-gray-700: #334155;
+  --nt-gray-800: #273449;
+  --nt-gray-900: #1f2937;
+  --nt-bg-gray-700: #f1f5f9;
+  --nt-bg-gray-800: #ffffff;
+  --nt-bg-blue-800: #ffedd5;
+  --nt-bg-blue-900: #fff7ed;
+  --nt-bg-blue-950: #ffffff;
+  color-scheme: light;
+}
+html.dark {
+  --nt-background: #181923;
+  --nt-surface: #252635;
+  --nt-field: #303142;
+  --nt-text: #f2f0f7;
+  --nt-muted: #aaa8ba;
+  --nt-border: #414255;
+  --nt-accent: #b8a4f4;
+  --nt-accent-fill: #b8a4f4;
+  --nt-accent-hover: #cbbbf9;
+  --nt-on-accent: #181923;
+  --nt-black-text: #f2f0f7;
+  --nt-white-text: #f2f0f7;
+  --nt-black-bg: #181923;
+  --nt-white-bg: #252635;
+  --nt-fixed-card: #252635;
+  --nt-fixed-muted: #aaa8ba;
+  --nt-gray-100: #181923;
+  --nt-gray-200: #303142;
+  --nt-gray-300: #414255;
+  --nt-gray-400: #aaa8ba;
+  --nt-gray-500: #aaa8ba;
+  --nt-gray-600: #aaa8ba;
+  --nt-gray-700: #414255;
+  --nt-gray-800: #303142;
+  --nt-gray-900: #252635;
+  --nt-bg-gray-700: #303142;
+  --nt-bg-gray-800: #252635;
+  --nt-bg-blue-800: #45405f;
+  --nt-bg-blue-900: #2d293e;
+  --nt-bg-blue-950: #252635;
+  color-scheme: dark;
+}
+body { background-color: var(--nt-background); color: var(--nt-text); }
+::selection { background: var(--nt-accent-fill); color: var(--nt-on-accent); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline-color: var(--nt-accent);
+}
+button.bg-blue-400, button.bg-blue-500, button.bg-blue-600, button.bg-blue-700 {
+  color: var(--nt-on-accent);
+}
+button.bg-blue-400:hover, button.bg-blue-500:hover, button.bg-blue-600:hover, button.bg-blue-700:hover {
+  background-color: var(--nt-accent-hover);
+}
+
+
+.support-page input[type="submit"] { color: var(--nt-on-accent); }

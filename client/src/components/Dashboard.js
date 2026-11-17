@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import useBookmarks from '../hooks/useBookmarks';
 import defaultImage from '../news-notdefined.jpeg';
 import { ThemeContext } from './ThemeContext';
 
@@ -13,33 +15,20 @@ const Dashboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [likedArticles, setLikedArticles] = useState([]);
+  const { likedArticles, toggleBookmark: handleBookmark } = useBookmarks();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const API_KEY = 'aa2c7282bcd749e68c22b3ff5df8a0ad';
-  const PAGE_SIZE = 6;
-
-  useEffect(() => {
-    const storedLikedArticles = localStorage.getItem('likedArticles');
-    if (storedLikedArticles) {
-      setLikedArticles(JSON.parse(storedLikedArticles));
-    }
-  }, []);
+  const [error, setError] = useState(null);  const PAGE_SIZE = 6;
 
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       setError(null);
 
-      try {
-        const API_KEY = "aa2c7282bcd749e68c22b3ff5df8a0ad";
-const url = isSearching
-  ? `https://newsapi.org/v2/everything?q=${encodeURIComponent(searchQuery)}&pageSize=${PAGE_SIZE}&page=${currentPage}&apiKey=${API_KEY}`
-  : `https://newsapi.org/v2/top-headlines?country=us&category=${selectedCategory}&pageSize=${PAGE_SIZE}&page=${currentPage}&apiKey=${API_KEY}`;
-
-
-        const response = await axios.get(url);
+      try {const params = new URLSearchParams({ page: String(currentPage), pageSize: String(PAGE_SIZE) });
+        const searching = isSearching || selectedCategory === 'politics';
+        if (searching) params.set('q', searchQuery || 'politics');
+        else params.set('category', selectedCategory);
+        const response = await axios.get(API_BASE_URL + (searching ? '/search?' : '/news?') + params, { timeout: 15000 });
 
         if (response.data && Array.isArray(response.data.articles)) {
           setSelectedNews(response.data.articles);
@@ -60,57 +49,6 @@ const url = isSearching
     fetchNews();
   }, [selectedCategory, currentPage, searchQuery, isSearching]);
 
-  const handleBookmark = async (article) => {
-  try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error('Please login to bookmark articles');
-      return;
-    }
-
-    const isBookmarked = likedArticles.some(a => a.url === article.url);
-    let updatedLikedArticles;
-
-    if (isBookmarked) {
-      // 🔁 Find the article with _id
-      const bookmarkedArticle = likedArticles.find(a => a.url === article.url);
-      const bookmarkId = bookmarkedArticle._id;
-
-      if (!bookmarkId) {
-        toast.error("Bookmark ID missing. Try refreshing.");
-        return;
-      }
-
-      // ✅ DELETE request using ID in URL
-      await axios.delete(`http://localhost:4000/api/v1/deleteBookmarkedNews/${bookmarkId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      updatedLikedArticles = likedArticles.filter(a => a.url !== article.url);
-      toast.success('Removed from favorites');
-    } else {
-      // ✅ POST request to add bookmark
-      const res = await axios.post(
-        `http://localhost:4000/api/v1/addToBookmarkedNews`,
-        article,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // Include _id from backend response
-      const savedArticle = { ...article, _id: res.data.updatedUserData.bookmarkedNews.slice(-1)[0] };
-      updatedLikedArticles = [...likedArticles, savedArticle];
-      toast.success('Added to favorites');
-    }
-
-    setLikedArticles(updatedLikedArticles);
-    localStorage.setItem('likedArticles', JSON.stringify(updatedLikedArticles));
-  } catch (err) {
-    console.error('Bookmark error:', err);
-    toast.error('Failed to update bookmark');
-  }
-};
-
-
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -125,7 +63,7 @@ const url = isSearching
       <div
         key={article.url}
         className={`rounded-lg shadow-lg p-6 transition-transform hover:scale-105 relative ${
-          theme === 'light' ? 'bg-[#333] text-white' : 'bg-white text-black'
+          theme === 'light' ? 'bg-[var(--nt-fixed-card,#1f2937)] text-white' : 'bg-white text-black'
         }`}
       >
         <div className={`w-10 h-10 shadow-lg rounded-full absolute top-4 right-4 grid place-items-center ${
