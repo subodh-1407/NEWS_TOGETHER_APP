@@ -247,3 +247,40 @@ body {
   color-scheme: dark;
 }
 .wrapper .form-container2 { color: var(--nt-text); }
+
+/* Password controls stay inside their fields at every viewport width. */
+.auth-password { position: relative; width: 100%; }
+.container2 .auth-password input { padding-right: 48px; }
+.container2 .auth-password-toggle { position: absolute; top: 8px; right: 0; display: grid; place-items: center; width: 44px; height: calc(100% - 16px); min-height: 36px; padding: 0; margin: 0; background: transparent; color: var(--nt-muted); border: 0; }
+.container2 .auth-password-toggle:hover { background: var(--nt-field); color: var(--nt-accent); }
+.auth-password-toggle>svg { width: 23px; height: 23px; }
+.container2 button:disabled { opacity: .65; cursor: wait; }
+@media(max-width:640px) {
+  .wrapper { height: auto; min-height: 100vh; min-height: 100dvh; padding: 24px 16px; }
+  .container2 { width: 100%; max-width: 440px; min-height: 0; border-radius: 22px; }
+  .form-container2 { position: relative; top: auto; width: 100%; height: auto; transition: none; }
+  .sign-in { display: block; }
+  .sign-up { display: none; }
+  .container2.active .sign-in { display: none; transform: none; }
+  .container2.active .sign-up { display: block; transform: none; opacity: 1; animation: none; }
+  .container2 form { height: auto; padding: 30px 24px; gap: 2px; }
+  .container2 form>h1 { font-size: 28px; margin-bottom: 8px; }
+  .container2 form>span { margin-bottom: 14px; }
+  .container2 input { min-height: 46px; font-size: 16px; }
+  .container2 button[type="submit"] { width: 100%; min-height: 46px; margin-top: 14px; }
+  .toggle-container2, .container2.active .toggle-container2 { position: relative; top: auto; left: auto; width: 100%; height: auto; transform: none; border-radius: 0; }
+  .toggle, .container2.active .toggle { position: relative; left: auto; width: 100%; height: auto; transform: none; }
+  .toggle-panel, .toggle-left, .toggle-right, .container2.active .toggle-left, .container2.active .toggle-right { position: relative; top: auto; right: auto; width: 100%; height: auto; padding: 24px; transform: none; }
+  .toggle-left { display: none; }
+  .toggle-right { display: flex; }
+  .container2.active .toggle-left { display: flex; }
+  .container2.active .toggle-right { display: none; }
+  .toggle-panel h1 { font-size: 24px; }
+  .toggle-panel p { margin: 12px 0; font-size: 13px; }
+  .wrapper .toggle button { min-height: 44px; margin-top: 6px; }
+}
+@media(max-width:380px) {
+  .container2 form { padding: 28px 18px; }
+  .fild { flex-direction: column; }
+  .fild .firstname { margin-right: 0; }
+}

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { API_BASE_URL } from '../config/api';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 
 import { FcLike, FcLikePlaceholder } from "react-icons/fc";
@@ -11,60 +12,36 @@ import Footer from './Footer';
 import { ThemeContext } from './ThemeContext';
 
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://news-together-app.onrender.com';
 
 const Search = () => {
   const location = useLocation();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => new URLSearchParams(location.search).get('q') || '');
   const [selectedNews, setSelectedNews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearching, setIsSearching] = useState(Boolean(searchQuery));
+  const [loading,setLoading] = useState(true);
+  const [error,setError] = useState('');
+  const [retry,setRetry] = useState(0);
   const { likedArticles, toggleBookmark: clickHandler } = useBookmarks();
   const { theme } = useContext(ThemeContext);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const category = params.get('q');
-
-    if (category) {
-      setSearchQuery(category);
-      fetchSearchData(category, currentPage);
-    }
-  }, [location.search, currentPage]);
-
-  useEffect(() => {
-    if (searchQuery) {
-      fetchSearchData(searchQuery, currentPage);
-    }
-  }, [searchQuery, currentPage]);
-
-  const fetchSearchData = async (query, page) => {
-    const pageSize = 6
-
+  const fetchSearchData = useCallback(async (query,page,signal) => {
+    setLoading(true);setError('');
     try {
-      let response
-
-      if (query && query.trim()) {
-        const url = `${API_BASE_URL}/api/v1/search?q=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
-        response = await axios.get(url, { timeout: 10000 })
-      } else {
-        const url = `${API_BASE_URL}/api/v1/news?category=general&page=${page}&pageSize=${pageSize}`
-        response = await axios.get(url, { timeout: 10000 })
-      }
-
-      if (response.status === 200 && response.data.articles) {
-        setSelectedNews(response.data.articles)
-        setTotalPages(Math.ceil(response.data.totalResults / pageSize))
-      } else {
-        throw new Error("Failed to fetch data")
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error)
-      setSelectedNews([])
-      setTotalPages(1)
-    }
-  }
+      const params = new URLSearchParams({page:String(page),pageSize:'6'});
+      if(query.trim())params.set('q',query.trim());else params.set('category','general');
+      const {data} = await axios.get(API_BASE_URL + (query.trim()?'/search?':'/news?') + params,{timeout:15000,signal});
+      if(data.status==='error' || !Array.isArray(data.articles))throw new Error(data.message || 'Unable to load news.');
+      if(!signal.aborted){setSelectedNews(data.articles);setTotalPages(Math.max(1,Math.ceil(data.totalResults/6)));}
+    } catch(error) {
+      if(!signal.aborted){setError(error.response?.data?.message || error.message || 'Unable to load news.');setSelectedNews([]);setTotalPages(1);}
+    } finally {if(!signal.aborted)setLoading(false);}
+  },[]);
+  useEffect(()=>{const q=new URLSearchParams(location.search).get('q') || '';setSearchQuery(q);setIsSearching(Boolean(q));setCurrentPage(1);},[location.search]);
+  useEffect(()=>{
+    const controller=new AbortController();const timer=setTimeout(()=>fetchSearchData(searchQuery,currentPage,controller.signal),searchQuery?400:0);
+    return()=>{clearTimeout(timer);controller.abort();};
+  },[searchQuery,currentPage,retry,fetchSearchData]);
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -79,7 +56,7 @@ const Search = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {news.map((article, index) => (
           <div key={index} className={`rounded-lg shadow-lg p-6 transition-transform transform hover:scale-105 relative ${theme === 'light' ? 'bg-black text-white' : 'bg-white text-black'}`}>
-            <div className='w-[40px] h-[40px] bg-black shadow-lg rounded-full absolute right-2 bottom-56 grid place-items-center'>
+            <div className='w-[40px] h-[40px] bg-black shadow-lg rounded-full absolute right-3 top-3 grid place-items-center'>
               <button onClick={() => clickHandler(article)}>
                 {likedArticles.some((a) => a.url === article.url) ? (
                   <FcLike fontSize="1.75rem" />
@@ -130,7 +107,10 @@ const Search = () => {
         </div>
 
         {/* Selected News Section */}
-        {selectedNews.length > 0 && (
+        {loading && <p role="status" className="text-center py-8">Loading news...</p>}
+        {error && <div className="news-error" role="alert"><p>{error}</p><button className="news-retry bg-blue-600 rounded-md" onClick={()=>setRetry(value=>value+1)}>Try again</button></div>}
+        {!loading && !error && selectedNews.length===0 && <p className="text-center py-8">No articles found. Try another search.</p>}
+        {!loading && !error && selectedNews.length > 0 && (
           <div id="selectedNews" className="mb-8">
             <h2 className="text-3xl font-bold text-center mb-6">{isSearching ? 'Search Results' : 'Top Headlines'}</h2>
             {renderNewsCards(selectedNews)}
@@ -143,14 +123,14 @@ const Search = () => {
             <button
               className={`px-4 py-2 text-white rounded-full transition-opacity ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-400' : 'bg-blue-700 hover:bg-blue-600'} ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
+              disabled={loading || currentPage === 1}
             >
               Previous
             </button>
             <button
               className={`px-4 py-2 text-white rounded-full transition-opacity ${theme === 'light' ? 'bg-blue-500 hover:bg-blue-400' : 'bg-blue-700 hover:bg-blue-600'} ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              disabled={loading || currentPage === totalPages}
             >
               Next
             </button>

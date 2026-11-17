@@ -41,7 +41,7 @@ const Footer = () => {
                     className="cursor-pointer"
                 />
             </div>
-            <footer className={`-mt-[400px] md:-mt-[300px] ${theme === 'dark'? 'bg-white text-black' :'bg-black text-white'}`}>
+            <footer className={`site-footer -mt-[400px] md:-mt-[300px] ${theme === 'dark'? 'bg-white text-black' :'bg-black text-white'}`}>
                 <div className="w-10/12 pt-[400px] pb-10 md:pt-[350px] md:my-0 md:w-11/12 max-w-[1080px] mx-auto flex flex-col space-y-6 lg:space-y-0 lg:space-x-4 lg:flex-row justify-between">
                     <div className="flex flex-col md:max-w-[340px] lg:max-w-[260px]">
                         <div className="gap-2">

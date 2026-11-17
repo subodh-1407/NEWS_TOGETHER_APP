@@ -1,71 +1,25 @@
-import React from 'react' ;
-import './Auth.css' ;
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from '../config/api';
-import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { API_BASE_URL } from '../config/api';
 import { AuthContext } from '../AuthContext';
-
-
-const SignInForm = () => {
-    const {setIsAuthenticated} = useContext(AuthContext);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false) ;
-
-    const navigate = useNavigate();
-
-    const handleSignIn = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(API_BASE_URL + '/login', { email, password });
-            const token = response.data.token ;
-            // store the token in local storage
-            localStorage.setItem('token', token);
-            // console.log(response.data.token) ;
-            setIsAuthenticated(true) ;
-            toast.success("Successfully logged in");
-            navigate('/home') ;
-
-        } catch (error) {
-            console.log('There was an error logging in!', error);
-            toast.error(error.response?.data?.message || 'Unable to connect. Please try again.');
-        }
-    };
-
-    return (
-        <form onSubmit={handleSignIn} className=''>
-            <h1 className='font-bold text-3xl'>Sign In</h1>
-            <span>or use your email password</span>
-
-            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-
-            <input className='relative' type={showPassword ? "text" : "password"} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                {showPassword ? (
-                    <AiOutlineEyeInvisible className='cursor-pointer absolute translate-x-32 translate-y-8'
-                    onClick={() => {
-                        setShowPassword(false);
-                        console.log(showPassword);
-                    }}
-                    fontSize={24}
-                    fill="var(--nt-muted)"
-                    />
-                ) : (
-                    <AiOutlineEye className='cursor-pointer absolute translate-x-32 translate-y-8'
-                    onClick={() => {
-                        setShowPassword(true);
-                        console.log(showPassword);
-                    }}
-                    fontSize={24}
-                    fill="var(--nt-muted)"
-                    />
-                )}
-            <button type="submit">Sign In</button>
-        </form>
-    );
+import PasswordField from './PasswordField';
+import './Auth.css';
+export default function SignInForm() {
+ const {setIsAuthenticated}=useContext(AuthContext);
+ const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false);
+ const navigate=useNavigate();
+ async function submit(event){
+  event.preventDefault();if(busy)return;setBusy(true);
+  try{const {data}=await axios.post(API_BASE_URL+'/login',{email,password},{timeout:15000});if(!data.token)throw new Error(data.message||'Unable to sign in.');localStorage.setItem('token',data.token);setIsAuthenticated(true);toast.success('Successfully logged in');navigate('/home');}
+  catch(error){toast.error(error.response?.data?.message||error.message||'Unable to connect. Please try again.');}
+  finally{setBusy(false);}
+ }
+ return <form onSubmit={submit} aria-busy={busy}>
+  <h1 className="font-bold text-3xl">Sign In</h1><span>Use your email and password</span>
+  <input type="email" placeholder="Email" aria-label="Email" autoComplete="email" value={email} onChange={event=>setEmail(event.target.value)} required disabled={busy}/>
+  <PasswordField value={password} onChange={event=>setPassword(event.target.value)} disabled={busy}/>
+  <button type="submit" disabled={busy}>{busy?'Signing in...':'Sign In'}</button>
+ </form>;
 }
-
-export default SignInForm ;

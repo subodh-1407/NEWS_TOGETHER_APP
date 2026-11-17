@@ -1,6 +1,6 @@
+import { API_BASE_URL } from '../config/api';
 
 
-"use client"
 
 import { useState, useEffect } from "react"
 import axios from "axios"
@@ -9,7 +9,6 @@ import { FaAngleLeft } from "react-icons/fa6"
 
 
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://news-together-app.onrender.com';
 
 const Main = () => {
   const [heroImages, setHeroImages] = useState([])
@@ -21,8 +20,8 @@ const Main = () => {
 
   const fetchHeroImages = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/v1/news?category=general&pageSize=10`, {
-        timeout: 10000,
+      const response = await axios.get(`${API_BASE_URL}/news?category=general&pageSize=10`, {
+        timeout: 15000,
       })
 
       const articles = response.data.articles
@@ -58,7 +57,7 @@ const Main = () => {
   return (
     <div>
       <section
-        className="relative bg-blue-900"
+        className="news-hero relative bg-blue-900"
         style={{
           backgroundImage: `url(${heroImages[currentImageIndex]})`,
           backgroundSize: "cover",
@@ -67,14 +66,16 @@ const Main = () => {
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black from-2% via-transparent to-black to-1%"></div>
 
-        <div className="w-10/12 max-w-[1080px] h-[550px] flex flex-col lg:flex-row justify-between items-center mx-auto relative">
+        <div className="hero-inner w-10/12 max-w-[1080px] h-[550px] flex flex-col lg:flex-row justify-between items-center mx-auto relative">
           <button
+            aria-label="Previous headline image"
             onClick={handlePrevImage}
             className="absolute left-[-100px] top-1/2 transform -translate-y-1/2 border-solid border-[4px] border-white bg-transparent hover:bg-blue-700 hover:opacity-85 w-14 h-14 rounded-full"
           >
             <FaAngleLeft className="stroke-[5px] w-6 h-6 md:w-10 md:h-10 text-blue-700 hover:text-white transform translate-x-1 translate-y-0" />
           </button>
           <button
+            aria-label="Next headline image"
             onClick={handleNextImage}
             className="absolute right-[-100px] top-1/2 transform -translate-y-1/2 border-solid border-[4px] border-white bg-transparent hover:bg-blue-700 hover:opacity-85 font-extrabold text-2xl w-14 h-14 rounded-full"
           >

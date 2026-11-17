@@ -3,6 +3,7 @@
 const express = require("express")
 const axios = require("axios")
 const router = express.Router()
+const newsData = require("../services/newsData")
 
 const { signup, login } = require("../controllers/Auth")
 const { auth } = require("../middlewares/auth")
@@ -31,6 +32,7 @@ router.get("/getImages", async (req, res) => {
 })
 
 router.get("/news", async (req, res) => {
+  if (newsData.isEnabled()) return newsData.getNews(req,res);
   try {
     const { category = "general", country = "us", page = 1, pageSize = 10, q } = req.query
 
@@ -74,6 +76,10 @@ router.get("/news", async (req, res) => {
 })
 
 router.get("/search", async (req, res) => {
+  if (newsData.isEnabled()) {
+    if (typeof req.query.q !== "string" || !req.query.q.trim()) return res.status(400).json({status:"error",message:"Enter a search term.",articles:[],totalResults:0});
+    return newsData.getNews(req,res);
+  }
   try {
     const { q, page = 1, pageSize = 10 } = req.query
 

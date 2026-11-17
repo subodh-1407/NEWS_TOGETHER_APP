@@ -8,7 +8,7 @@ const Popular = () => {
 
   return (
     <div className={theme}>
-      <section className={`w-full h-[557px] ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>
+      <section className={`popular-section w-full h-[557px] ${theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white'}`}>
         <div className='flex justify-center items-center top-10'>
           <div className={`absolute w-5/6 border-[1.5px] rounded-lg ${theme === 'dark' ? 'border-gray-300' : 'border-gray-600'}`}></div>
         </div>
@@ -43,7 +43,7 @@ const Popular = () => {
               Amazon's Project Kuiper to Launch in 2024
             </li>
           </ul>
-          <video src="https://www.apple.com/105/media/us/apple-vision-pro/2023/7e268c13-eb22-493d-a860-f0637bacb569/anim/foundation-digital-canvas/large.mp4" autoPlay loop muted alt="" className="max-w-[600px] absolute right-20 top-20 hidden md:max-w-[400px] lg:max-w-[600px] md:block lg:block"></video>
+          <video src="https://www.apple.com/105/media/us/apple-vision-pro/2023/7e268c13-eb22-493d-a860-f0637bacb569/anim/foundation-digital-canvas/large.mp4" autoPlay loop muted playsInline preload="metadata" className="max-w-[600px] absolute right-20 top-20 hidden md:max-w-[400px] lg:max-w-[600px] md:block lg:block"></video>
         </div>
       </section>
     </div>

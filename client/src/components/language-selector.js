@@ -26,7 +26,7 @@ const LanguageSelector = () => {
   }, [i18n, i18n.language]);
 
   return (
-    <div className={`flex space-x-4 ${theme === 'light' ? 'bg-gray-800' : 'bg-gray-100'} p-2 rounded-md`}>
+    <div className={`language-options flex flex-wrap gap-2 ${theme === 'light' ? 'bg-gray-800' : 'bg-gray-100'} p-2 rounded-md`}>
       {languages.map((lng) => (
         <button
           className={`px-4 py-2 rounded-md transition-colors duration-300 

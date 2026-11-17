@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 
@@ -7,7 +8,6 @@ import useBookmarks from '../hooks/useBookmarks';
 import defaultImage from '../news-notdefined.jpeg';
 import { ThemeContext } from './ThemeContext';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://news-together-app.onrender.com';
 
 const Dashboard = () => {
   const { theme } = useContext(ThemeContext);
@@ -19,9 +19,11 @@ const Dashboard = () => {
   const [isSearching, setIsSearching] = useState(false);
   const { likedArticles, toggleBookmark: handleBookmark } = useBookmarks();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);  const PAGE_SIZE = 6;
+  const [error, setError] = useState(null);
+  const [retry, setRetry] = useState(0);  const PAGE_SIZE = 6;
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchNews = async () => {
       setLoading(true)
       setError(null)
@@ -29,18 +31,20 @@ const Dashboard = () => {
       try {
         let url
         if (isSearching && searchQuery) {
-          url = `${API_BASE_URL}/api/v1/search?q=${encodeURIComponent(searchQuery)}&page=${currentPage}&pageSize=${PAGE_SIZE}`
+          url = `${API_BASE_URL}/search?q=${encodeURIComponent(searchQuery)}&page=${currentPage}&pageSize=${PAGE_SIZE}`
         } else {
-          url = `${API_BASE_URL}/api/v1/news?category=${selectedCategory}&page=${currentPage}&pageSize=${PAGE_SIZE}`
+          url = `${API_BASE_URL}/news?category=${selectedCategory}&page=${currentPage}&pageSize=${PAGE_SIZE}`
         }
 
         const response = await axios.get(url, {
           timeout: 15000,
+          signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
           },
         })
 
+        if (response.data?.status === "error") throw new Error(response.data.message || "Unable to load news.");
         if (response.data && Array.isArray(response.data.articles)) {
           setSelectedNews(response.data.articles)
           setTotalPages(Math.ceil(response.data.totalResults / PAGE_SIZE))
@@ -48,17 +52,19 @@ const Dashboard = () => {
           throw new Error("Invalid response format")
         }
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error("Error fetching news:", err)
-        setError("Failed to load news. Please try again later.")
+        setError(err.response?.data?.message || err.response?.data?.error || err.message || "Unable to load news.")
         setSelectedNews([])
         setTotalPages(1)
       } finally {
-        setLoading(false)
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
-    fetchNews();
-  }, [selectedCategory, currentPage, searchQuery, isSearching]);
+    const timer = setTimeout(fetchNews, searchQuery ? 400 : 0);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [selectedCategory, currentPage, searchQuery, isSearching, retry]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -174,7 +180,7 @@ const Dashboard = () => {
         {loading ? (
           <div className="text-center py-8">Loading news...</div>
         ) : error ? (
-          <div className="text-center py-8 text-red-500">{error}</div>
+          <div className="news-error" role="alert"><p>{error}</p><button className="news-retry bg-blue-600 rounded-md" onClick={() => setRetry(value => value + 1)}>Try again</button></div>
         ) : selectedNews.length === 0 ? (
           <div className="text-center py-8">No news articles found. Try a different search or category.</div>
         ) : (

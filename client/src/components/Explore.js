@@ -13,14 +13,14 @@ const Explore = () => {
     return (
         <div className={`w-full h-full ${theme === 'light' ? 'bg-black' : 'bg-gray-100'}`}>
             <section
-                className={`bg-cover bg-center w-full h-full bg-no-repeat relative min-h-[530px] ${theme === 'light' ? 'bg-black' : 'bg-white'}`}
+                className={`explore-section bg-cover bg-center w-full h-full bg-no-repeat relative min-h-[530px] ${theme === 'light' ? 'bg-black' : 'bg-white'}`}
                 style={{ backgroundImage: `url(${theme === 'dark' ? CTABgDark : CTABg})` }}
             >
                 <div className={`flex justify-center items-center relative ${theme === 'light' ? 'text-white' : 'text-black'}`}>
                     <div className={`absolute w-5/6 border-[1.5px] ${theme === 'light' ? 'border-white' : 'border-gray-300'} rounded-lg`}></div>
                 </div>
 
-                <div className={`w-11/12 max-w-[1080px] relative flex flex-row items-center justify-between space-x-20 mx-auto pt-16 ${theme === 'light' ? 'text-white' : 'text-black'}`}>
+                <div className={`explore-content w-11/12 max-w-[1080px] relative flex flex-row items-center justify-between space-x-20 mx-auto pt-16 ${theme === 'light' ? 'text-white' : 'text-black'}`}>
                     <div className="flex flex-col gap-5 mt-12 max-w-[600px]">
                         <h2 className={`font-bold text-2xl text-left ${theme === 'light' ? 'text-white' : 'text-white'}`}>
                             Go Beyond The Headlines: In-Depth NewTogether

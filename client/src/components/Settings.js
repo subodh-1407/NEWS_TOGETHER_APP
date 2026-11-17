@@ -34,7 +34,7 @@ const Settings = () => {
               theme === 'light' ? 'bg-[var(--nt-fixed-card,#1f2937)] text-white' : 'bg-white text-black'
             }`}
           >
-            <div className={`w-[40px] h-[40px] ${theme === 'light' ? 'bg-black' : 'bg-white'} shadow-lg rounded-full absolute right-2 bottom-56 grid place-items-center`}>
+            <div className={`w-[40px] h-[40px] ${theme === 'light' ? 'bg-black' : 'bg-white'} shadow-lg rounded-full absolute right-3 top-3 grid place-items-center`}>
               <button aria-label={likedArticles.some(a => a.url === article.url) ? 'Remove bookmark' : 'Add bookmark'} onClick={() => clickHandler(article)} className={`p-2 rounded-full ${theme === 'light' ? 'bg-black' : 'bg-white'}`}>
                 {likedArticles.some((a) => a.url === article.url) ? (
                   <FcLike fontSize="1.75rem" />

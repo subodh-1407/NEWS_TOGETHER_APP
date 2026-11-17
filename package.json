@@ -10,7 +10,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "node --test server/tests/bookmarks.test.js server/tests/http.test.js && npm test --prefix client -- --watchAll=false --runInBand",
+    "test": "node --test server/tests/bookmarks.test.js server/tests/http.test.js server/tests/newsData.test.js && npm test --prefix client -- --watchAll=false --runInBand",
     "start": "concurrently -n \"client,server\" -c \"bgBlue,bgGreen\" \"npm run client\" \"npm run server\"",
     "server": "cd server && npm run dev",
     "client": "npm start --prefix client",

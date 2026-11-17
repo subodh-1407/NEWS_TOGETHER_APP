@@ -38,7 +38,10 @@ function App() {
             </>
           ) : (
             <>
-              <Auth />
+              <Routes>
+                <Route path="/" element={<Auth />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
             </>
           )}
         </div>
